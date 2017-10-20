@@ -11,12 +11,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.health.PackageHealthStats;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -26,6 +32,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +42,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.soma.skinbutler.R;
-import com.soma.skinbutler.util.CameraPreview;
+import com.soma.skinbutler.util.CameraPreView;
 
 import android.view.ViewGroup.LayoutParams;
 
@@ -44,22 +51,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     private static final String TAG = "CameraActivity";
-    CameraPreview preview;
+    CameraPreView preview;
     Camera camera;
     Context ctx;
 
     private final static int PERMISSIONS_REQUEST_CODE = 100;
-    // Camera.CameraInfo.CAMERA_FACING_FRONT or Camera.CameraInfo.CAMERA_FACING_BACK
     private final static int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_BACK;
     private AppCompatActivity mActivity;
 
+    @Bind(R.id.cameraView)
+    SurfaceView cameraView;
+    @Bind(R.id.guideView)
+    SurfaceView guideView;
+
+    SurfaceHolder cameraHolder, guideHolder;
 
     public static void doRestart(Context c) {
         //http://stackoverflow.com/a/22345538
@@ -107,7 +119,7 @@ public class CameraActivity extends AppCompatActivity {
     public void startCamera() {
 
         if ( preview == null ) {
-            preview = new CameraPreview(this, (SurfaceView) findViewById(R.id.surfaceView));
+            preview = new CameraPreView(this, cameraView);
             preview.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT));
             ((FrameLayout) findViewById(R.id.frameLayout)).addView(preview);
@@ -169,6 +181,8 @@ public class CameraActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_camera);
 
+        ButterKnife.bind(this);
+
         Button button = (Button)findViewById(R.id.captureBtn);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,6 +190,16 @@ public class CameraActivity extends AppCompatActivity {
                 camera.takePicture(shutterCallback, rawCallback, jpegCallback);
             }
         });
+
+        cameraHolder = cameraView.getHolder();
+        cameraHolder.addCallback(this);
+        cameraView.setSecure(true);
+
+        guideHolder = guideView.getHolder();
+        guideHolder.addCallback(this);
+        guideHolder.setFormat(PixelFormat.TRANSLUCENT);
+
+        guideView.setZOrderMediaOverlay(true);
 
 
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
@@ -297,6 +321,126 @@ public class CameraActivity extends AppCompatActivity {
             Log.d(TAG, "onPictureTaken - jpeg");
         }
     };
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        try {
+
+            synchronized (surfaceHolder)
+
+            {draw();}   //call a draw method
+
+        }
+
+        catch (Exception e) {
+
+            Log.i("Exception", e.toString());
+
+            return;
+
+        }
+
+//        Camera.Parameters param;
+//
+//        param = camera.getParameters();
+//
+//
+//
+//        param.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+//
+//        Display display = ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+//
+//        if(display.getRotation() == Surface.ROTATION_0)
+//
+//        {
+//
+//            camera.setDisplayOrientation(90);
+//
+//        }
+//
+//
+//
+//        camera.setParameters(param);
+//
+//
+//
+//        try {
+//
+//            camera.setPreviewDisplay(holder);
+//
+//            camera.startPreview();
+//
+//        }
+//
+//        catch (Exception e) {
+//
+//
+//
+//            return;
+//
+//        }
+//        startCamera();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+        refreshCamera();
+    }
+
+    public void refreshCamera() {
+        if (cameraHolder.getSurface() == null) {
+            return;
+        }
+
+        try {
+            camera.stopPreview();
+        }
+        catch (Exception e) {
+        }
+
+        try {
+
+            camera.setPreviewDisplay(cameraHolder);
+            camera.startPreview();
+        }
+        catch (Exception e) {
+
+        }
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+        camera.release();
+    }
+
+    void draw() {
+        Canvas canvas = guideHolder.lockCanvas(null);
+
+        Paint  paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.GREEN);
+        paint.setStrokeWidth(3);
+
+        Path path =new Path();
+
+        path.moveTo(100,100);
+        path.lineTo(100,100);
+        path.lineTo(400,100);
+        path.lineTo(400,400);
+        path.lineTo(100,400);
+        path.lineTo(100,100);
+
+        canvas.drawPath(path, paint);
+
+        canvas.drawLine(200, 100, 200, 400, paint);
+        canvas.drawLine(300, 100, 300, 400, paint);
+        canvas.drawLine(100, 200, 400, 200, paint);
+        canvas.drawLine(100, 300, 400, 300, paint);
+
+        guideHolder.unlockCanvasAndPost(canvas);
+    }
 
     private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
 

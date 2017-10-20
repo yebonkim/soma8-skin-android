@@ -16,7 +16,7 @@ import java.util.List;
  * Created by yebonkim on 2017. 10. 20..
  */
 
-public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
+public class CameraPreView extends ViewGroup implements SurfaceHolder.Callback {
     private final String TAG = "Preview";
 
     SurfaceView mSurfaceView;
@@ -25,7 +25,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
 
-    public CameraPreview(Context context, SurfaceView sv ) {
+    public CameraPreView(Context context, SurfaceView sv ) {
         super(context);
 
         mSurfaceView = sv;

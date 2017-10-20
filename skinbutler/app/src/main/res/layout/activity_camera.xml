@@ -14,12 +14,17 @@
         android:layout_weight="10"
         >
 
+
         <SurfaceView
-            android:id="@+id/surfaceView"
+            android:id="@+id/cameraView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
 
+        <SurfaceView
+            android:id="@+id/guideView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <Button
             android:layout_width="wrap_content"

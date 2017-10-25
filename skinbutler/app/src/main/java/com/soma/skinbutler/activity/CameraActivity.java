@@ -352,7 +352,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
                     //bitmap을 byte array로 변환
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    croppedBmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byte[] currentData = stream.toByteArray();
 
                     //파일로 저장

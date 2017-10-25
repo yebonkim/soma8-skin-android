@@ -18,24 +18,26 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
-import android.os.health.PackageHealthStats;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -43,18 +45,18 @@ import android.widget.Toast;
 
 import com.soma.skinbutler.R;
 import com.soma.skinbutler.util.CameraPreView;
-
-import android.view.ViewGroup.LayoutParams;
+import com.soma.skinbutler.util.PixelCalculator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Random;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     private static final String TAG = "CameraActivity";
@@ -63,47 +65,135 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     Context ctx;
 
     private final static int PERMISSIONS_REQUEST_CODE = 100;
-    private final static int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_BACK;
+    private final static int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_FRONT;
+
     private AppCompatActivity mActivity;
 
     @Bind(R.id.cameraView)
     SurfaceView cameraView;
     @Bind(R.id.guideView)
     SurfaceView guideView;
+    @Bind(R.id.frameLayout)
+    FrameLayout frameLayout;
 
     SurfaceHolder cameraHolder, guideHolder;
 
-    public static void doRestart(Context c) {
-        //http://stackoverflow.com/a/22345538
+    Path[] paths;
+
+    Canvas canvas;
+
+    int interval, stdX, stdY;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        hideTitleBar();
+        setContentView(R.layout.activity_camera);
+        ButterKnife.bind(this);
+        getSupportActionBar().hide();
+
+        ctx = this;
+        mActivity = this;
+
+
+        initPath();
+
+        cameraHolder = cameraView.getHolder();
+        cameraHolder.addCallback(this);
+        cameraView.setSecure(true);
+
+        guideHolder = guideView.getHolder();
+        guideHolder.addCallback(this);
+        guideHolder.setFormat(PixelFormat.TRANSLUCENT);
+        guideView.setZOrderMediaOverlay(true);
+
+
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            //퍼미션 요청
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                int hasCameraPermission = ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CAMERA);
+                int hasWriteExternalStoragePermission =
+                        ContextCompat.checkSelfPermission(this,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                if (! (hasCameraPermission == PackageManager.PERMISSION_GRANTED
+                        && hasWriteExternalStoragePermission == PackageManager.PERMISSION_GRANTED)) {
+                    //퍼미션 요청
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            PERMISSIONS_REQUEST_CODE);
+                }
+            }
+        } else {
+            Toast.makeText(CameraActivity.this, "Camera not supported",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @OnClick(R.id.captureBtn)
+    public void capture() {
+        camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+    }
+
+    @OnClick(R.id.frameLayout)
+    public void focusing() {
+        camera.autoFocus(new Camera.AutoFocusCallback() {
+            public void onAutoFocus(boolean success, Camera camera) {
+            }
+        });
+    }
+
+    private void hideTitleBar() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    private int getScreenWidth() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        return displayMetrics.widthPixels;
+    }
+
+    private int getPictureWidth() {
+        if(camera==null)
+            return 0;
+
+        return camera.getParameters().getPictureSize().width;
+    }
+
+    private int getPictureHeight() {
+        if(camera==null)
+            return 0;
+
+        return camera.getParameters().getPictureSize().height;
+    }
+
+    private static void doRestart(Context context) {
+        int mPendingIntentId = 223344;
+
         try {
-            //check if the context is given
-            if (c != null) {
-                //fetch the packagemanager so we can get the default launch activity
-                // (you can replace this intent with any other activity if you want
-                PackageManager pm = c.getPackageManager();
-                //check if we got the PackageManager
+            if (context != null) {
+                PackageManager pm = context.getPackageManager();
                 if (pm != null) {
-                    //create the intent with the default start activity for your application
-                    Intent mStartActivity = pm.getLaunchIntentForPackage(
-                            c.getPackageName()
-                    );
-                    if (mStartActivity != null) {
-                        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        //create a pending intent so the application is restarted
-                        // after System.exit(0) was called.
-                        // We use an AlarmManager to call this intent in 100ms
-                        int mPendingIntentId = 223344;
+                    Intent intent = pm.getLaunchIntentForPackage(context.getPackageName());
+                    if (intent != null) {
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent mPendingIntent = PendingIntent
-                                .getActivity(c, mPendingIntentId, mStartActivity,
+                                .getActivity(context, mPendingIntentId, intent,
                                         PendingIntent.FLAG_CANCEL_CURRENT);
                         AlarmManager mgr =
-                                (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
+                                (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                         mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-                        //kill the application
                         System.exit(0);
                     } else {
                         Log.e(TAG, "Was not able to restart application, " +
-                                "mStartActivity null");
+                                "intent null");
                     }
                 } else {
                     Log.e(TAG, "Was not able to restart application, PM null");
@@ -116,26 +206,63 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         }
     }
 
-    public void startCamera() {
+    private void changePreviewSize(List<Camera.Size> sizes, int width, int height, Camera.Parameters cameraParams) {
+        //오차
+        final double TOLERANCE = 0.1;
+        double targetRatio = (double) height / width;
 
-        if ( preview == null ) {
+        if (sizes == null) return;
+
+        Camera.Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = height;
+
+        //tolerance 적용
+        for (Camera.Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > TOLERANCE) continue;
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        //tolerance 미적용
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+
+        cameraParams.setPreviewSize(optimalSize.width, optimalSize.height);
+    }
+
+    private void changeFrameLayoutSize(Camera.Parameters cameraParams) {
+        int screenWidth = getScreenWidth();
+        double ratio = (double) getPictureWidth() / getPictureHeight();
+        int adjustHeight = (int) ((findViewById(R.id.frameLayout)).getWidth() * ratio);
+
+        android.widget.RelativeLayout.LayoutParams params = new android.widget.RelativeLayout.LayoutParams(screenWidth, adjustHeight);
+        frameLayout.setLayoutParams(params);
+
+        changePreviewSize(cameraParams.getSupportedPreviewSizes(), screenWidth, adjustHeight, cameraParams);
+    }
+
+    private void startCamera() {
+        if (preview == null) {
             preview = new CameraPreView(this, cameraView);
             preview.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT));
             ((FrameLayout) findViewById(R.id.frameLayout)).addView(preview);
             preview.setKeepScreenOn(true);
-
-            /* 프리뷰 화면 눌렀을 때  사진을 찍음
-            preview.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-                    camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                }
-            });*/
         }
-
         preview.setCamera(null);
+
         if (camera != null) {
             camera.release();
             camera = null;
@@ -144,17 +271,16 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         int numCams = Camera.getNumberOfCameras();
         if (numCams > 0) {
             try {
-
                 camera = Camera.open(CAMERA_FACING);
-                // camera orientation
                 camera.setDisplayOrientation(setCameraDisplayOrientation(this, CAMERA_FACING,
                         camera));
-                // get Camera parameters
                 Camera.Parameters params = camera.getParameters();
-                // picture image orientation
-                params.setRotation(setCameraDisplayOrientation(this, CAMERA_FACING, camera));
-                camera.startPreview();
 
+                params.setRotation(setCameraDisplayOrientation(this, CAMERA_FACING, camera));
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                changeFrameLayoutSize(params);
+                camera.setParameters(params);
+                camera.startPreview();
             } catch (RuntimeException ex) {
                 Toast.makeText(ctx, "camera_not_found " + ex.getMessage().toString(),
                         Toast.LENGTH_LONG).show();
@@ -165,103 +291,10 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         preview.setCamera(camera);
     }
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ctx = this;
-        mActivity = this;
-
-        //상태바 없애기
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        setContentView(R.layout.activity_camera);
-
-        ButterKnife.bind(this);
-
-        Button button = (Button)findViewById(R.id.captureBtn);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            }
-        });
-
-        cameraHolder = cameraView.getHolder();
-        cameraHolder.addCallback(this);
-        cameraView.setSecure(true);
-
-        guideHolder = guideView.getHolder();
-        guideHolder.addCallback(this);
-        guideHolder.setFormat(PixelFormat.TRANSLUCENT);
-
-        guideView.setZOrderMediaOverlay(true);
-
-
-        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { //API 23 이상이면
-                // 런타임 퍼미션 처리 필요
-
-                int hasCameraPermission = ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.CAMERA);
-                int hasWriteExternalStoragePermission =
-                        ContextCompat.checkSelfPermission(this,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-                if ( hasCameraPermission == PackageManager.PERMISSION_GRANTED
-                        && hasWriteExternalStoragePermission==PackageManager.PERMISSION_GRANTED){
-                    ;//이미 퍼미션을 가지고 있음
-                }
-                else {
-                    //퍼미션 요청
-                    ActivityCompat.requestPermissions( this,
-                            new String[]{Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PERMISSIONS_REQUEST_CODE);
-                }
-            }
-            else{
-                ;
-            }
-
-
-        } else {
-            Toast.makeText(CameraActivity.this, "Camera not supported",
-                    Toast.LENGTH_LONG).show();
-        }
-
-
-    }
-
-
     @Override
     protected void onResume() {
         super.onResume();
-
         startCamera();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Surface will be destroyed when we return, so stop the preview.
-        if(camera != null) {
-            // Call stopPreview() to stop updating the preview surface
-            camera.stopPreview();
-            preview.setCamera(null);
-            camera.release();
-            camera = null;
-        }
-
-        ((FrameLayout) findViewById(R.id.frameLayout)).removeView(preview);
-        preview = null;
-
     }
 
     private void resetCam() {
@@ -269,7 +302,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     }
 
     private void refreshGallery(File file) {
-        Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(Uri.fromFile(file));
         sendBroadcast(mediaScanIntent);
     }
@@ -287,36 +320,45 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     };
 
 
-    //참고 : http://stackoverflow.com/q/37135675
     Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
 
-            //이미지의 너비와 높이 결정
-            int w = camera.getParameters().getPictureSize().width;
-            int h = camera.getParameters().getPictureSize().height;
 
             int orientation = setCameraDisplayOrientation(CameraActivity.this,
                     CAMERA_FACING, camera);
 
+            orientation+=90;
+            orientation%=360;
+
             //byte array를 bitmap으로 변환
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeByteArray( data, 0, data.length, options);
-            //int w = bitmap.getWidth();
-            //int h = bitmap.getHeight();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
 
             //이미지를 디바이스 방향으로 회전
             Matrix matrix = new Matrix();
             matrix.postRotate(orientation);
-            bitmap =  Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
+            //1440/1920 -> 화면크기 3:4
+            //4032/3024 -> 사진크기 4:3 ->  bitmap 크기
+            int bitmapWidth = bitmap.getWidth();
+            int bitmapHeight = bitmap.getHeight();
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
 
-            //bitmap을 byte array로 변환
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] currentData = stream.toByteArray();
+            Bitmap croppedBmp;
 
-            //파일로 저장
-            new SaveImageTask().execute(currentData);
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    croppedBmp = Bitmap.createBitmap(bitmap, stdX + interval * i, stdY + interval * j, interval, interval);
+
+                    //bitmap을 byte array로 변환
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    byte[] currentData = stream.toByteArray();
+
+                    //파일로 저장
+                    new SaveImageTask().execute(currentData);
+                }
+            }
             resetCam();
             Log.d(TAG, "onPictureTaken - jpeg");
         }
@@ -325,119 +367,79 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try {
-
-            synchronized (surfaceHolder)
-
-            {draw();}   //call a draw method
-
-        }
-
-        catch (Exception e) {
-
+            synchronized (surfaceHolder) {
+                draw();
+            }
+        } catch (Exception e) {
             Log.i("Exception", e.toString());
-
             return;
-
         }
-
-//        Camera.Parameters param;
-//
-//        param = camera.getParameters();
-//
-//
-//
-//        param.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-//
-//        Display display = ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-//
-//        if(display.getRotation() == Surface.ROTATION_0)
-//
-//        {
-//
-//            camera.setDisplayOrientation(90);
-//
-//        }
-//
-//
-//
-//        camera.setParameters(param);
-//
-//
-//
-//        try {
-//
-//            camera.setPreviewDisplay(holder);
-//
-//            camera.startPreview();
-//
-//        }
-//
-//        catch (Exception e) {
-//
-//
-//
-//            return;
-//
-//        }
-//        startCamera();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-        refreshCamera();
-    }
-
-    public void refreshCamera() {
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
         if (cameraHolder.getSurface() == null) {
             return;
         }
 
         try {
             camera.stopPreview();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         try {
-
             camera.setPreviewDisplay(cameraHolder);
             camera.startPreview();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch (Exception e) {
-
-        }
-
     }
-
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         camera.release();
     }
 
-    void draw() {
-        Canvas canvas = guideHolder.lockCanvas(null);
+    private void initPath() {
+        paths = new Path[9];
+        interval = PixelCalculator.pxToDp(800);
+        stdX = PixelCalculator.pxToDp(1000);
+        stdY = PixelCalculator.pxToDp(3000);
+        int[][] stdPoint = new int[9][2];
 
-        Paint  paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        int idx = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                stdPoint[idx++] = new int[]{stdX + interval * i, stdY + interval * j};
+            }
+        }
+
+        int x, y;
+        for (int i = 0; i < paths.length; i++) {
+            paths[i] = new Path();
+            x = stdPoint[i][0];
+            y = stdPoint[i][1];
+            paths[i].moveTo(x, y);
+            paths[i].lineTo(x, y);
+            paths[i].lineTo(x + interval, y);
+            paths[i].lineTo(x + interval, y + interval);
+            paths[i].lineTo(x, y + interval);
+            paths[i].lineTo(x, y);
+        }
+    }
+
+    private void draw() {
+        canvas = guideHolder.lockCanvas(null);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.GREEN);
         paint.setStrokeWidth(3);
 
-        Path path =new Path();
-
-        path.moveTo(100,100);
-        path.lineTo(100,100);
-        path.lineTo(400,100);
-        path.lineTo(400,400);
-        path.lineTo(100,400);
-        path.lineTo(100,100);
-
-        canvas.drawPath(path, paint);
-
-        canvas.drawLine(200, 100, 200, 400, paint);
-        canvas.drawLine(300, 100, 300, 400, paint);
-        canvas.drawLine(100, 200, 400, 200, paint);
-        canvas.drawLine(100, 300, 400, 300, paint);
+        for (int i = 0; i < paths.length; i++) {
+            canvas.drawPath(paths[i], paint);
+        }
 
         guideHolder.unlockCanvasAndPost(canvas);
     }
@@ -451,7 +453,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             // Write to SD Card
             try {
                 File sdCard = Environment.getExternalStorageDirectory();
-                File dir = new File (sdCard.getAbsolutePath() + "/camtest");
+                File dir = new File(sdCard.getAbsolutePath() + "/camtest");
                 dir.mkdirs();
 
                 String fileName = String.format("%d.jpg", System.currentTimeMillis());
@@ -478,14 +480,10 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     }
 
     /**
-     *
      * @param activity
-     * @param cameraId  Camera.CameraInfo.CAMERA_FACING_FRONT,
-     *                    Camera.CameraInfo.CAMERA_FACING_BACK
-     * @param camera
-     *
-     * Camera Orientation
-     * reference by https://developer.android.com/reference/android/hardware/Camera.html
+     * @param cameraId Camera.CameraInfo.CAMERA_FACING_FRONT,
+     *                 Camera.CameraInfo.CAMERA_FACING_BACK
+     * @param camera   Camera Orientation
      */
     public static int setCameraDisplayOrientation(Activity activity,
                                                   int cameraId, android.hardware.Camera camera) {
@@ -496,17 +494,25 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 .getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
         }
 
         int result;
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360;  // compensate the mirror
-        } else {  // back-facing
+            result = (360 - result) % 360;
+        } else {
             result = (info.orientation - degrees + 360) % 360;
         }
 
@@ -514,13 +520,12 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     }
 
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grandResults) {
 
-        if ( requestCode == PERMISSIONS_REQUEST_CODE && grandResults.length > 0) {
+        if (requestCode == PERMISSIONS_REQUEST_CODE && grandResults.length > 0) {
 
             int hasCameraPermission = ContextCompat.checkSelfPermission(this,
                     Manifest.permission.CAMERA);
@@ -528,13 +533,12 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                     ContextCompat.checkSelfPermission(this,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-            if ( hasCameraPermission == PackageManager.PERMISSION_GRANTED
-                    && hasWriteExternalStoragePermission == PackageManager.PERMISSION_GRANTED ){
+            if (hasCameraPermission == PackageManager.PERMISSION_GRANTED
+                    && hasWriteExternalStoragePermission == PackageManager.PERMISSION_GRANTED) {
 
                 //이미 퍼미션을 가지고 있음
                 doRestart(this);
-            }
-            else{
+            } else {
                 checkPermissions();
             }
         }
@@ -557,19 +561,19 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                         Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
 
-        if ( (hasCameraPermission == PackageManager.PERMISSION_DENIED && cameraRationale)
-                || (hasWriteExternalStoragePermission== PackageManager.PERMISSION_DENIED
+        if ((hasCameraPermission == PackageManager.PERMISSION_DENIED && cameraRationale)
+                || (hasWriteExternalStoragePermission == PackageManager.PERMISSION_DENIED
                 && writeExternalStorageRationale))
             showDialogForPermission("앱을 실행하려면 퍼미션을 허가하셔야합니다.");
 
-        else if ( (hasCameraPermission == PackageManager.PERMISSION_DENIED && !cameraRationale)
-                || (hasWriteExternalStoragePermission== PackageManager.PERMISSION_DENIED
+        else if ((hasCameraPermission == PackageManager.PERMISSION_DENIED && !cameraRationale)
+                || (hasWriteExternalStoragePermission == PackageManager.PERMISSION_DENIED
                 && !writeExternalStorageRationale))
             showDialogForPermissionSetting("퍼미션 거부 + Don't ask again(다시 묻지 않음) " +
                     "체크 박스를 설정한 경우로 설정에서 퍼미션 허가해야합니다.");
 
-        else if ( hasCameraPermission == PackageManager.PERMISSION_GRANTED
-                || hasWriteExternalStoragePermission== PackageManager.PERMISSION_GRANTED ) {
+        else if (hasCameraPermission == PackageManager.PERMISSION_GRANTED
+                || hasWriteExternalStoragePermission == PackageManager.PERMISSION_GRANTED) {
             doRestart(this);
         }
     }
@@ -623,7 +627,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         });
         builder.create().show();
     }
-
 
 
 }

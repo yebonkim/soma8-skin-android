@@ -1,4 +1,4 @@
-package com.soma.skinbutler.util;
+package com.soma.skinbutler.view;
 
 import android.content.Context;
 import android.hardware.Camera;

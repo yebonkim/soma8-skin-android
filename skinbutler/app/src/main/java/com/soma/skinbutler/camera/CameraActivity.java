@@ -1,4 +1,4 @@
-package com.soma.skinbutler.activity;
+package com.soma.skinbutler.camera;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -18,7 +18,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -35,16 +34,14 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.soma.skinbutler.R;
-import com.soma.skinbutler.util.CameraPreView;
+import com.soma.skinbutler.view.CameraPreView;
 import com.soma.skinbutler.util.PixelCalculator;
 
 import java.io.ByteArrayOutputStream;
@@ -327,7 +324,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             int orientation = setCameraDisplayOrientation(CameraActivity.this,
                     CAMERA_FACING, camera);
 
-            orientation+=90;
+            orientation+=180;
             orientation%=360;
 
             //byte array를 bitmap으로 변환
@@ -345,6 +342,10 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
 
             Bitmap croppedBmp;
+
+            stdX = 800;
+            stdY = 1450;
+            interval = 400;
 
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {

@@ -3,7 +3,7 @@ package com.soma.skinbutler.util;
 import android.content.res.Resources;
 
 /**
- * Created by Kimyebon on 2016-09-28.
+ * Created by Kimyebon on 2017. 10. 26.
  */
 
 public class PixelCalculator {

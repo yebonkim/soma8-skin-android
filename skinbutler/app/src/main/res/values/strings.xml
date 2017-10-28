@@ -1,3 +1,5 @@
 <resources>
+    <!--common-->
     <string name="app_name">Skinbutler</string>
+    <string name="ok">ok</string>
 </resources>

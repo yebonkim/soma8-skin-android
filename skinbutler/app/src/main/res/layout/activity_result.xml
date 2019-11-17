@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="55dp"
+        >
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/action_bar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="40" />
+
+            <TextView
+                android:id="@+id/skinNameTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="봄 라이트 톤"
+                android:textColor="@color/textBlack"
+                android:textSize="25sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="20" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="추천색"
+                android:textColor="@color/textBlack"
+                android:textSize="22sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="12" />
+
+            <ImageView
+                android:id="@+id/colorIV"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/light_spring" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="20" />
+
+            <TextView
+                android:id="@+id/infoTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/gray_line_box"
+                android:paddingLeft="10dp"
+                android:text="봄 라이트 톤은 채도가 낮은 색이 어울리는 웜톤이에요.\n\n
+
+대표 연예인은 아이유, 수지, 설리, 송혜교 등이 있어요\n\n
+
+봄 라이트 톤은 채도가 낮은 색 위주로 화장을 해야해요.\n\n
+
+음영화장이나 진한 눈 화장은 어울리지 않고\n\n
+
+눈 화장은 최대한 줄이고 속눈썹을 신경써서 올리고 립 화장에 집중해야 훨씬 자연스러워요\n\n
+
+립스틱 색은 채도가 높지않고 명도가 높은 색상이 어울려요.\n\n
+
+블러셔는 최대한 생략하는 것이 좋으나 흰색이 섞인 핑크가 어울리는 편이에요!\n\n
+"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="18" />
+        </LinearLayout>
+
+    </ScrollView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/goWebViewBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="#2a2a2a"
+        android:text="잇톤 시작하기"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</FrameLayout>

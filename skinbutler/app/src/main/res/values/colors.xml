@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#c169fa</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="white">#ffffff</color>
+    <color name="textBlack">#363636</color>
+
+    <color name="kakaoString">#3c1e1e</color>
+    <color name="kakaoBack">#ffe600</color>
+    <color name="facebook">#39539c</color>
+
+    <color name="actionBar1">#d79bff</color>
+    <color name="actionBar2">#c77df6</color>
+    <color name="actionBar3">#8b6bf5</color>
+
+    <color name="notice">#ff7f20</color>
+
+    <color name="guideLine">#6f5d7c</color>
+
+
+</resources>

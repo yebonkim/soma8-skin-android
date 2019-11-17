@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/topPanel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:background="#2a2a2a"
+        android:layout_alignParentTop="true"
+        >
+
+        <Button
+            android:id="@+id/swapBtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/camera_reverse"
+            />
+
+    </RelativeLayout>
+
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <SurfaceView
+                android:id="@+id/cameraView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <SurfaceView
+                android:id="@+id/guideView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </FrameLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/bottomPanel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:orientation="horizontal"
+        android:background="#2a2a2a"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/frameLayout"
+        >
+
+
+        <Button
+            android:id="@+id/cancelBtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/camera_cancel"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dp"
+            />
+
+        <Button
+            android:id="@+id/captureBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/camera_ok"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
+
+
+</LinearLayout>

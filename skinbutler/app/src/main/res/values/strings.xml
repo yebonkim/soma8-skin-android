@@ -1,0 +1,68 @@
+<resources>
+    <!--common-->
+    <string name="app_name">Skinbutler</string>
+    <string name="ok">ok</string>
+    <string name="error">오류</string>
+    <string name="confirm">확인</string>
+    <string name="inputName">닉네임을 입력해주세요.</string>
+    <string name="inputPassword">비밀번호를 입력해주세요.</string>
+    <string name="confirmPassword">비밀번호를 확인해주세요.</string>
+    <string name="confirmId">아이디를 확인해주세요.</string>
+
+    <!--dialog-->
+    <string name="skipAlert">피부톤에 맞는\n화장품 추천이 불가능해요.</string>
+    <string name="cancel">취소</string>
+    <string name="fine">괜찮아요</string>
+
+    <!-- action bar -->
+    <string name="guideTitle">피부톤 측정</string>
+
+    <!--sign up -->
+    <string name="nickname">닉네임</string>
+    <string name="passwordConfirm">비밀번호 확인</string>
+    <string name="birthday">생년월일</string>x
+    <string name="sex">성별</string>
+    <string name="skinType">피부타입</string>
+    <string name="male">남자</string>
+    <string name="female">여자</string>
+    <string name="dryness">건성</string>
+    <string name="neutral">중성</string>
+    <string name="oilly">지성</string>
+    <string name="compound">복합성</string>
+    <string name="sensivitity">민감성</string>
+    <string name="signUpComplete">회원가입 완료</string>
+
+    <string name="month1">January</string>
+    <string name="month2">February</string>
+    <string name="month3">March</string>
+    <string name="month4">April</string>
+    <string name="month5">May</string>
+    <string name="month6">June</string>
+    <string name="month7">July</string>
+    <string name="month8">August</string>
+    <string name="month9">September</string>
+    <string name="month10">October</string>
+    <string name="month11">November</string>
+    <string name="month12">December</string>
+
+    <!--login-->
+    <string name="id">아이디</string>
+    <string name="password">비밀번호</string>
+    <string name="login">로그인</string>
+    <string name="kakao">카카오톡으로 시작하기</string>
+    <string name="facebook">페이스북으로 시작하기</string>
+    <string name="noAccount">계정이 없으세요?</string>
+    <string name="signUp">회원가입</string>
+    <string name="inputId">아이디를 입력해주세요.</string>
+    <string name="inputPw">비밀번호를 입력해주세요.</string>
+    <string name="wait">잠시만 기다려주세요...</string>
+
+    <!--guide-->
+    <string name="guide1">스킨버틀러 스킨지를 준비해주세요.</string>
+    <string name="guide2">광대에 스킨지 구멍을 정확히 갖다 데어주세요.</string>
+    <string name="guide3">화면의 가이드에 맞춰 촬영해주세요.</string>
+    <string name="notice1">* 사진은 일체 전송되지 않고 피부톤만을 저장합니다.</string>
+    <string name="notice2">* 스킨톤지에 그림자가 지지 않도록 주의해주세요.</string>
+    <string name="skip">건너뛰기</string>
+    <string name="start">시작하기</string>
+</resources>

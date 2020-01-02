@@ -5,77 +5,69 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/topPanel"
+        android:id="@+id/layout_top"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
-        android:background="#2a2a2a"
         android:layout_alignParentTop="true"
-        >
+        android:layout_weight="3"
+        android:background="#2a2a2a">
 
         <Button
-            android:id="@+id/swapBtn"
+            android:id="@+id/btn_swap"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginRight="25dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/camera_reverse"
-            />
+            android:layout_marginRight="25dp"
+            android:background="@drawable/camera_reverse" />
 
     </RelativeLayout>
 
 
-        <FrameLayout
-            android:id="@+id/frameLayout"
+    <FrameLayout
+        android:id="@+id/layout_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <SurfaceView
+            android:id="@+id/camera"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="match_parent" />
 
-            <SurfaceView
-                android:id="@+id/cameraView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
-
-            <SurfaceView
-                android:id="@+id/guideView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+        <SurfaceView
+            android:id="@+id/guide"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
-        </FrameLayout>
-
+    </FrameLayout>
 
 
     <RelativeLayout
-        android:id="@+id/bottomPanel"
+        android:id="@+id/layout_bottom"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
-        android:orientation="horizontal"
-        android:background="#2a2a2a"
+        android:layout_below="@id/layout_frame"
         android:layout_alignParentBottom="true"
-        android:layout_below="@id/frameLayout"
-        >
+        android:layout_weight="7"
+        android:background="#2a2a2a"
+        android:orientation="horizontal">
 
 
         <Button
-            android:id="@+id/cancelBtn"
+            android:id="@+id/btn_cancel"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:background="@drawable/camera_cancel"
             android:layout_centerVertical="true"
             android:layout_marginLeft="25dp"
-            />
+            android:background="@drawable/camera_cancel" />
 
         <Button
-            android:id="@+id/captureBtn"
+            android:id="@+id/btn_capture"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/camera_ok"
             android:layout_centerInParent="true"
-            />
+            android:background="@drawable/camera_ok" />
     </RelativeLayout>
 
 

@@ -10,9 +10,8 @@ import com.soma.skinbutler.camera.CameraActivity;
 import com.soma.skinbutler.login.LoginActivity;
 
 public class SplashActivity extends AppCompatActivity  {
-    private static final String TAG = "SplashActivity";
-
     private static final int WAIT_TIME = 2000;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

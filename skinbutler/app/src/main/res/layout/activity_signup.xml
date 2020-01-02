@@ -13,10 +13,10 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="12"/>
+        android:layout_weight="12" />
 
     <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/profileIV"
+        android:id="@+id/image_profile"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_gravity="center_horizontal"
@@ -24,69 +24,68 @@
         android:scaleType="centerCrop"
         app:riv_corner_radius="30dip"
         app:riv_mutate_background="true"
-        app:riv_oval="true"
-        />
+        app:riv_oval="true" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="12"/>
+        android:layout_weight="12" />
 
     <EditText
-        android:id="@+id/nameET"
+        android:id="@+id/edit_name"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="36"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_centerHorizontal="true"
+        android:layout_weight="36"
         android:background="@drawable/gray_line_box"
         android:hint="@string/nickname"
-        android:textSize="12sp"
-        android:paddingLeft="10dp" />
+        android:paddingLeft="10dp"
+        android:textSize="12sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="12"/>
+        android:layout_weight="12" />
 
     <EditText
-        android:id="@+id/pwET"
+        android:id="@+id/edit_pw"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="36"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_centerHorizontal="true"
-        android:inputType="textPassword"
+        android:layout_weight="36"
         android:background="@drawable/gray_line_box"
         android:hint="@string/password"
-        android:textSize="12sp"
-        android:paddingLeft="10dp" />
+        android:inputType="textPassword"
+        android:paddingLeft="10dp"
+        android:textSize="12sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="12"/>
+        android:layout_weight="12" />
 
     <EditText
-        android:id="@+id/pwConfirmET"
+        android:id="@+id/edit_pw_confirm"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="36"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_centerHorizontal="true"
-        android:inputType="textPassword"
+        android:layout_weight="36"
         android:background="@drawable/gray_line_box"
         android:hint="@string/passwordConfirm"
-        android:textSize="12sp"
-        android:paddingLeft="10dp" />
+        android:inputType="textPassword"
+        android:paddingLeft="10dp"
+        android:textSize="12sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="18"/>
+        android:layout_weight="18" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -100,14 +99,14 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"/>
+        android:layout_weight="5" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="36"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
+        android:layout_weight="36"
         android:orientation="horizontal">
 
         <FrameLayout
@@ -116,13 +115,12 @@
             android:layout_weight="132">
 
             <Spinner
-                android:id="@+id/monthSpinner"
+                android:id="@+id/spinner_month"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/gray_line_box"
-                android:textSize="12sp"
                 android:entries="@array/month_list"
-                ></Spinner>
+                android:textSize="12sp"></Spinner>
 
             <ImageView
                 android:layout_width="10dp"
@@ -144,7 +142,7 @@
             android:layout_weight="84">
 
             <Spinner
-                android:id="@+id/daySpinner"
+                android:id="@+id/spinner_day"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/gray_line_box"
@@ -170,7 +168,7 @@
             android:layout_weight="108">
 
             <Spinner
-                android:id="@+id/yearSpinner"
+                android:id="@+id/spinner_year"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/gray_line_box"
@@ -190,7 +188,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="18"/>
+        android:layout_weight="18" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -204,32 +202,32 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"/>
+        android:layout_weight="5" />
 
     <RadioGroup
-        android:id="@+id/genderRG"
+        android:id="@+id/radio_gender"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="36"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:layout_marginBottom="18dp"
+        android:layout_weight="36"
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/maleBtn"
+            android:id="@+id/btn_male"
             android:layout_width="75dp"
             android:layout_height="36dp"
             android:layout_marginRight="12dp"
             android:background="@drawable/black_oval_btn_background"
-            android:textColor="@color/white"
             android:button="@null"
             android:gravity="center"
             android:text="@string/male"
+            android:textColor="@color/white"
             android:textSize="10sp" />
 
         <RadioButton
-            android:id="@+id/femaleBtn"
+            android:id="@+id/btn_female"
             android:layout_width="75dp"
             android:layout_height="36dp"
             android:layout_marginRight="12dp"
@@ -243,7 +241,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="18"/>
+        android:layout_weight="18" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -257,16 +255,15 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"/>
-
+        android:layout_weight="5" />
 
     <RadioGroup
-        android:id="@+id/skinTypeRG"
+        android:id="@+id/radio_skin_type"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="84"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
+        android:layout_weight="84"
         android:orientation="horizontal">
 
         <RelativeLayout
@@ -274,24 +271,24 @@
             android:layout_height="match_parent">
 
             <RadioButton
-                android:id="@+id/drynessBtn"
+                android:id="@+id/btn_dryness"
                 android:layout_width="75dp"
                 android:layout_height="36dp"
-                android:layout_marginBottom="12dp"
                 android:layout_marginRight="12dp"
+                android:layout_marginBottom="12dp"
                 android:background="@drawable/black_oval_btn_background"
                 android:button="@null"
-                android:textColor="@color/white"
                 android:gravity="center"
                 android:text="@string/dryness"
+                android:textColor="@color/white"
                 android:textSize="10sp" />
 
             <RadioButton
-                android:id="@+id/neutralBtn"
+                android:id="@+id/btn_neutral"
                 android:layout_width="75dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="12dp"
-                android:layout_toRightOf="@id/drynessBtn"
+                android:layout_toRightOf="@id/btn_dryness"
                 android:background="@drawable/white_oval_btn_background"
                 android:button="@null"
                 android:gravity="center"
@@ -299,11 +296,11 @@
                 android:textSize="10sp" />
 
             <RadioButton
-                android:id="@+id/oillyBtn"
+                android:id="@+id/btn_oilly"
                 android:layout_width="75dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="12dp"
-                android:layout_toRightOf="@id/neutralBtn"
+                android:layout_toRightOf="@id/btn_neutral"
                 android:background="@drawable/white_oval_btn_background"
                 android:button="@null"
                 android:gravity="center"
@@ -311,11 +308,11 @@
                 android:textSize="10sp" />
 
             <RadioButton
-                android:id="@+id/compoundBtn"
+                android:id="@+id/btn_compound"
                 android:layout_width="75dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="12dp"
-                android:layout_toRightOf="@id/oillyBtn"
+                android:layout_toRightOf="@id/btn_oilly"
                 android:background="@drawable/white_oval_btn_background"
                 android:button="@null"
                 android:gravity="center"
@@ -323,10 +320,10 @@
                 android:textSize="10sp" />
 
             <RadioButton
-                android:id="@+id/sensivitityBtn"
+                android:id="@+id/btn_sensitivity"
                 android:layout_width="75dp"
                 android:layout_height="36dp"
-                android:layout_below="@id/drynessBtn"
+                android:layout_below="@id/btn_dryness"
                 android:layout_marginRight="12dp"
                 android:background="@drawable/white_oval_btn_background"
                 android:button="@null"
@@ -339,16 +336,15 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="20"/>
+        android:layout_weight="20" />
 
     <Button
-        android:id="@+id/signUpBtn"
+        android:id="@+id/btn_sign_up"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="50"
-        android:text="@string/signUpComplete"
-        android:textSize="16sp"
-        android:textColor="@color/white"
         android:background="#2a2a2a"
-        />
+        android:text="@string/signUpComplete"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 </LinearLayout>

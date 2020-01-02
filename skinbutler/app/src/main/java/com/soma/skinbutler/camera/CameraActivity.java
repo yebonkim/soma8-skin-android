@@ -1,40 +1,24 @@
 package com.soma.skinbutler.camera;
 
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.soma.skinbutler.R;
-import com.soma.skinbutler.common.util.PixelCalculator;
 import com.soma.skinbutler.common.util.SimpleDialogBuilder;
 import com.soma.skinbutler.view.CameraPreView;
-import com.soma.skinbutler.webview.WebViewActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,17 +27,17 @@ import butterknife.OnClick;
 public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback, CameraContract.View {
     CameraPreView preview;
 
-    @BindView(R.id.cameraView)
+    @BindView(R.id.camera)
     SurfaceView cameraView;
-    @BindView(R.id.guideView)
+    @BindView(R.id.guide)
     SurfaceView guideView;
-    @BindView(R.id.frameLayout)
+    @BindView(R.id.layout_frame)
     FrameLayout frameLayout;
 
-    SurfaceHolder cameraHolder, guideHolder;
+    private SurfaceHolder mCameraHolder, mGuideHolder;
 
-    CameraPresenter presenter;
-    private ProgressDialog progressDialog;
+    private CameraPresenter mPresenter;
+    private ProgressDialog mProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,34 +45,35 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         setContentView(R.layout.activity_camera);
         ButterKnife.bind(this);
 
-        presenter = new CameraPresenter();
-        presenter.setView(this, this);
-        presenter.initPath();
+        mPresenter = new CameraPresenter();
+        mPresenter.setView(this, this);
+        mPresenter.initPath();
 
         setCameraHolder();
         setGuideHolder();
         startCamera();
+        setLoadingDialog();
     }
 
     protected void setCameraHolder() {
-        cameraHolder = cameraView.getHolder();
-        cameraHolder.addCallback(this);
+        mCameraHolder = cameraView.getHolder();
+        mCameraHolder.addCallback(this);
         cameraView.setSecure(true);
     }
 
     protected void setGuideHolder() {
-        guideHolder = guideView.getHolder();
-        guideHolder.addCallback(this);
-        guideHolder.setFormat(PixelFormat.TRANSLUCENT);
+        mGuideHolder = guideView.getHolder();
+        mGuideHolder.addCallback(this);
+        mGuideHolder.setFormat(PixelFormat.TRANSLUCENT);
         guideView.setZOrderMediaOverlay(true);
     }
 
-    @OnClick(R.id.swapBtn)
+    @OnClick(R.id.btn_swap)
     public void swapCamera() {
-        presenter.swapCamera();
+        mPresenter.swapCamera();
     }
 
-    @OnClick(R.id.cancelBtn)
+    @OnClick(R.id.btn_cancel)
     public void onCancel() {
         SimpleDialogBuilder.makeCustomTwoButtonDialogAndShow(this, getString(R.string.skipAlert),
                 getLayoutInflater(), new View.OnClickListener() {
@@ -99,14 +84,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         });
     }
 
-    @OnClick(R.id.captureBtn)
+    @OnClick(R.id.btn_capture)
     public void capture() {
-        presenter.capture();
+        mPresenter.capture();
     }
 
-    @OnClick(R.id.frameLayout)
+    @OnClick(R.id.layout_frame)
     public void focusing() {
-        presenter.focusing();
+        mPresenter.focusing();
     }
 
     @Override
@@ -126,15 +111,15 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void changeLayoutAndPreviewSize(final Camera.Parameters cameraParams) {
         int screenWidth = getScreenWidth();
-        int pictureWidth = presenter.getPictureWidth();
-        int pictureHeight = presenter.getPictureHeight();
+        int pictureWidth = mPresenter.getPictureWidth();
+        int pictureHeight = mPresenter.getPictureHeight();
         double ratio = (double) pictureWidth / pictureHeight;
         int adjustHeight = (int) (screenWidth * ratio);
 
         android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(screenWidth, adjustHeight);
         frameLayout.setLayoutParams(params);
 
-        Camera.Size optimalSize = presenter.getOptimalPreviewSize(screenWidth, adjustHeight, cameraParams);
+        Camera.Size optimalSize = mPresenter.getOptimalPreviewSize(screenWidth, adjustHeight, cameraParams);
 
         cameraParams.setPreviewSize(optimalSize.width, optimalSize.height);
     }
@@ -144,7 +129,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             preview = new CameraPreView(this, cameraView);
             preview.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT));
-            ((FrameLayout) findViewById(R.id.frameLayout)).addView(preview);
+            ((FrameLayout) findViewById(R.id.layout_frame)).addView(preview);
             preview.setKeepScreenOn(true);
         }
 
@@ -154,7 +139,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void startCamera() {
         setPreview();
-        preview.setCamera(presenter.getCamera());
+        preview.setCamera(mPresenter.getCamera());
     }
 
     @Override
@@ -176,13 +161,13 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-//        presenter.releaseCamera();
+//        mPresenter.releaseCamera();
     }
 
     protected void draw() {
-        Canvas canvas = guideHolder.lockCanvas(null);
-        presenter.setCanvasGuideLine(canvas);
-        guideHolder.unlockCanvasAndPost(canvas);
+        Canvas canvas = mGuideHolder.lockCanvas(null);
+        mPresenter.setCanvasGuideLine(canvas);
+        mGuideHolder.unlockCanvasAndPost(canvas);
     }
 
     @Override
@@ -193,16 +178,18 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
     @Override
     public void showLoadingDialog() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(getString(R.string.wait));
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        mProgressDialog.show();
     }
-
 
     @Override
     public void dismissLoadingDialog() {
-        progressDialog.dismiss();
+        mProgressDialog.dismiss();
+    }
+
+    private void setLoadingDialog() {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setMessage(getString(R.string.wait));
+        mProgressDialog.setCancelable(false);
     }
 }

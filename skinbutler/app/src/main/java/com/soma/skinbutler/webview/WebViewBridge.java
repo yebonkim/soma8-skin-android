@@ -9,7 +9,6 @@ import android.webkit.JavascriptInterface;
  */
 
 public class WebViewBridge {
-
     Handler mHandler;
 
     public WebViewBridge() {

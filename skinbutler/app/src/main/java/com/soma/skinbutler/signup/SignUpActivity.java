@@ -7,7 +7,6 @@ import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ActionMode;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -25,52 +24,49 @@ import com.soma.skinbutler.login.LoginActivity;
 import com.soma.skinbutler.serverinterface.request.SignUpRequest;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SignUpActivity extends AppCompatActivity  implements SignUpContract.View{
-    private static final String TAG = "SignUpActivity";
+public class SignUpActivity extends AppCompatActivity  implements SignUpContract.View {
+    private final static int PHOTO_CODE = 1001;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.profileIV)
-    ImageView profileIV;
-    @BindView(R.id.nameET)
-    EditText nameET;
-    @BindView(R.id.pwET)
-    EditText pwET;
-    @BindView(R.id.pwConfirmET)
-    EditText pwConfirmET;
-    @BindView(R.id.monthSpinner)
+    @BindView(R.id.image_profile)
+    ImageView profileImage;
+    @BindView(R.id.edit_name)
+    EditText nameEdit;
+    @BindView(R.id.edit_pw)
+    EditText pwEdit;
+    @BindView(R.id.edit_pw_confirm)
+    EditText pwConfirmEdit;
+    @BindView(R.id.spinner_month)
     Spinner monthSpinner;
-    @BindView(R.id.daySpinner)
+    @BindView(R.id.spinner_day)
     Spinner daySpinner;
-    @BindView(R.id.yearSpinner)
+    @BindView(R.id.spinner_year)
     Spinner yearSpinner;
-    @BindView(R.id.genderRG)
-    RadioGroup genderRG;
-    @BindView(R.id.maleBtn)
+    @BindView(R.id.radio_gender)
+    RadioGroup genderRadioGroup;
+    @BindView(R.id.btn_male)
     RadioButton maleBtn;
-    @BindView(R.id.femaleBtn)
+    @BindView(R.id.btn_female)
     RadioButton femaleBtn;
-    @BindView(R.id.drynessBtn)
+    @BindView(R.id.btn_dryness)
     RadioButton drynessBtn;
-    @BindView(R.id.neutralBtn)
+    @BindView(R.id.btn_neutral)
     RadioButton neutralBtn;
-    @BindView(R.id.oillyBtn)
+    @BindView(R.id.btn_oilly)
     RadioButton oillyBtn;
-    @BindView(R.id.compoundBtn)
+    @BindView(R.id.btn_compound)
     RadioButton compoundBtn;
-    @BindView(R.id.sensivitityBtn)
-    RadioButton sensivitityBtn;
+    @BindView(R.id.btn_sensitivity)
+    RadioButton sensitivityBtn;
 
-    final int photoCode = 9999;
-
-    SignUpPresenter presenter;
+    SignUpPresenter mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,43 +75,45 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
         ButterKnife.bind(this);
 
         ActionBarManager.initBackArrowActionbar(this, toolbar, getString(R.string.signUp));
-        presenter = new SignUpPresenter();
-        presenter.setView(this, this);
-        genderRG.setOnCheckedChangeListener(sexChangedListener);
-        drynessBtn.setOnCheckedChangeListener(skinTypeChangedListener);
-        neutralBtn.setOnCheckedChangeListener(skinTypeChangedListener);
-        oillyBtn.setOnCheckedChangeListener(skinTypeChangedListener);
-        compoundBtn.setOnCheckedChangeListener(skinTypeChangedListener);
-        sensivitityBtn.setOnCheckedChangeListener(skinTypeChangedListener);
-        profileIV.setBackgroundDrawable(getResources().getDrawable(R.drawable.profile_default));
+
+        mPresenter = new SignUpPresenter();
+        mPresenter.setView(this, this);
+
+        genderRadioGroup.setOnCheckedChangeListener(mGenderChangedListener);
+        drynessBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
+        neutralBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
+        oillyBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
+        compoundBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
+        sensitivityBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
+        profileImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.profile_default));
     }
 
-    RadioGroup.OnCheckedChangeListener sexChangedListener = new RadioGroup.OnCheckedChangeListener() {
+    RadioGroup.OnCheckedChangeListener mGenderChangedListener = new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup radioGroup, @IdRes int id) {
             setWhiteButton(maleBtn);
             setWhiteButton(femaleBtn);
 
             switch (id) {
-                case R.id.maleBtn:
+                case R.id.btn_male:
                     setBlackButton(maleBtn);
                     break;
-                case R.id.femaleBtn:
+                case R.id.btn_female:
                     setBlackButton(femaleBtn);
                     break;
             }
         }
     };
 
-    CompoundButton.OnCheckedChangeListener skinTypeChangedListener = new CompoundButton.OnCheckedChangeListener() {
+    CompoundButton.OnCheckedChangeListener mSkinTypeChangedListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-            if(isChecked) {
+            if (isChecked) {
                 setWhiteButton(drynessBtn);
                 setWhiteButton(neutralBtn);
                 setWhiteButton(oillyBtn);
                 setWhiteButton(compoundBtn);
-                setWhiteButton(sensivitityBtn);
+                setWhiteButton(sensitivityBtn);
 
                 compoundButton.setBackgroundResource(R.drawable.black_oval_btn_background);
                 compoundButton.setTextColor(ContextCompat.getColor(SignUpActivity.this, R.color.white));
@@ -150,11 +148,11 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
     @Override
     public SignUpRequest collectData(String image) {
         SignUpRequest request = new SignUpRequest();
-        request.setName(nameET.getText().toString());
-        request.setPassword(pwET.getText().toString());
+        request.setName(nameEdit.getText().toString());
+        request.setPassword(pwEdit.getText().toString());
         request.setBirthday(getBirthday());
         request.setEmail("");
-        request.setSex(getSex());
+        request.setSex(getGender());
         request.setProfileImg(image);
         request.setSkinTypeId(getSkinTypeId());
         return request;
@@ -164,50 +162,51 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
         String year = yearSpinner.getSelectedItem().toString();
         String month = monthSpinner.getSelectedItem().toString();
 
-        if(month.equals("January"))
+        if (month.equals("January"))
             month = "01";
-        else if(month.equals("February"))
+        else if (month.equals("February"))
             month = "02";
-        else if(month.equals("March"))
+        else if (month.equals("March"))
             month = "03";
-        else if(month.equals("April"))
+        else if (month.equals("April"))
             month = "04";
-        else if(month.equals("May"))
+        else if (month.equals("May"))
             month = "05";
-        else if(month.equals("June"))
+        else if (month.equals("June"))
             month = "06";
-        else if(month.equals("July"))
+        else if (month.equals("July"))
             month = "07";
-        else if(month.equals("August"))
+        else if (month.equals("August"))
             month = "08";
-        else if(month.equals("September"))
+        else if (month.equals("September"))
             month = "09";
-        else if(month.equals("October"))
+        else if (month.equals("October"))
             month = "10";
-        else if(month.equals("November"))
+        else if (month.equals("November"))
             month = "11";
-        else if(month.equals("December"))
+        else if (month.equals("December"))
             month = "12";
 
         String day = daySpinner.getSelectedItem().toString();
         return year+"-"+month+"-"+day;
     }
 
-    protected int getSex() {
-        if(maleBtn.isChecked())
+    protected int getGender() {
+        if (maleBtn.isChecked()) {
             return 0;
-        else
+        } else {
             return 1;
+        }
     }
 
     protected int getSkinTypeId() {
-        if(drynessBtn.isChecked())
+        if (drynessBtn.isChecked())
             return 1;
-        else if(neutralBtn.isChecked())
+        else if (neutralBtn.isChecked())
             return 2;
-        else if(oillyBtn.isChecked())
+        else if (oillyBtn.isChecked())
             return 3;
-        else if(compoundBtn.isChecked())
+        else if (compoundBtn.isChecked())
             return 4;
         else
             return 5;
@@ -224,20 +223,21 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
         SimpleDialogBuilder.makeCustomOneButtonDialogAndShow(this, errorMsg, getLayoutInflater());
     }
 
-    @OnClick(R.id.profileIV)
+    @OnClick(R.id.image_profile)
     public void goToGallery() {
         Intent cameraIntent = new Intent(Intent.ACTION_PICK);
         cameraIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
         cameraIntent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(cameraIntent, photoCode);
+        startActivityForResult(cameraIntent, PHOTO_CODE);
     }
 
-    @OnClick(R.id.signUpBtn)
+    @OnClick(R.id.btn_sign_up)
     public void signUpBtn() {
-        boolean isValid = presenter.validate(nameET.getText().toString(), pwET.getText().toString(), pwConfirmET.getText().toString());
+        boolean isValid = mPresenter.validate(nameEdit.getText().toString(), pwEdit.getText().toString(), pwConfirmEdit.getText().toString());
 
-        if(isValid)
-            presenter.signUp();
+        if (isValid) {
+            mPresenter.signUp();
+        }
     }
 
     @Override
@@ -253,12 +253,12 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == photoCode) {
+        if (requestCode == PHOTO_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 try {
-                    profileIV.setBackgroundDrawable(ImageUtil.bitmapToBitmapDrawable(SignUpActivity.this, data));
+                    profileImage.setBackgroundDrawable(ImageUtil.bitmapToBitmapDrawable(SignUpActivity.this, data));
                     String path = ImageUtil.getRealPathFromURI(SignUpActivity.this, data.getData());
-                    presenter.setProfile(ImageUtil.imageToString(new File(path)));
+                    mPresenter.setProfile(ImageUtil.imageToString(new File(path)));
                 }catch (Exception e) {
                     e.printStackTrace();
                 }

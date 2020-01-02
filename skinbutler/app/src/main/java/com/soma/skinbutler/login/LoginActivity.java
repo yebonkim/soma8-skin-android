@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.soma.skinbutler.R;
+import com.soma.skinbutler.common.IntentExtra;
 import com.soma.skinbutler.signup.SignUpActivity;
 import com.soma.skinbutler.webview.WebViewActivity;
 import com.soma.skinbutler.common.util.SimpleDialogBuilder;
@@ -17,40 +18,38 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View{
-    private static final String TAG = "LoginActivity";
-    @BindView(R.id.idET)
-    EditText idET;
-    @BindView(R.id.pwET)
-    EditText pwET;
+    @BindView(R.id.edit_id)
+    EditText idEdit;
+    @BindView(R.id.edit_pw)
+    EditText pwEdit;
 
-    LoginPresenter presenter;
+    private LoginPresenter mPresenter;
+    private ProgressDialog mProgressDialog;
 
-    private ProgressDialog progressDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        presenter = new LoginPresenter();
-        presenter.setView(this, this);
-        presenter.getPermission();
+        mPresenter = new LoginPresenter();
+        mPresenter.setView(this, this);
+        mPresenter.getPermission();
+        setLoadingDialog();
     }
 
-    @OnClick(R.id.loginBtn)
+    @OnClick(R.id.btn_login)
     public void login() {
-        String userId = idET.getText().toString();
-        String password = pwET.getText().toString();
+        String userId = idEdit.getText().toString();
+        String password = pwEdit.getText().toString();
 
-        presenter.onLoginClick(userId, password);
+        mPresenter.onLoginClick(userId, password);
     }
 
     @Override
-    @OnClick(R.id.goSignUpBtn)
+    @OnClick(R.id.btn_sign_up)
     public void goToSignUpActivity() {
-        Intent i = new Intent(this, SignUpActivity.class);
-        startActivity(i);
-        finish();
+        startActivity(new Intent(this, SignUpActivity.class));
     }
 
     @Override
@@ -60,16 +59,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void showLoadingDialog() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(getString(R.string.wait));
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        mProgressDialog.show();
     }
 
     @Override
     public void stopLoadingDialog() {
-        progressDialog.dismiss();
+        mProgressDialog.dismiss();
     }
 
     @Override
@@ -80,9 +75,16 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void goToWebViewActivity(int userId) {
         Intent i = new Intent(this, WebViewActivity.class);
-        i.putExtra("userId", userId);
+        i.putExtra(IntentExtra.USER_ID, userId);
         startActivity(i);
         finish();
+    }
+
+    private void setLoadingDialog() {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setMessage(getString(R.string.wait));
+        mProgressDialog.setCancelable(false);
     }
 
 }

@@ -8,104 +8,88 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_marginBottom="55dp"
-        >
+        android:orientation="vertical">
 
-    <include
-        android:id="@+id/header"
-        layout="@layout/action_bar" />
+        <include
+            android:id="@+id/header"
+            layout="@layout/action_bar" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="40" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/skinNameTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:text="봄 라이트 톤"
-                android:textColor="@color/textBlack"
-                android:textSize="25sp" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="40" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:text="추천색"
-                android:textColor="@color/textBlack"
-                android:textSize="22sp" />
+                <TextView
+                    android:id="@+id/text_skin_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:textColor="@color/textBlack"
+                    android:textSize="25sp" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="12" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="20" />
 
-            <ImageView
-                android:id="@+id/colorIV"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:background="@drawable/light_spring" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:text="추천색"
+                    android:textColor="@color/textBlack"
+                    android:textSize="22sp" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="12" />
 
-            <TextView
-                android:id="@+id/infoTV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:background="@drawable/gray_line_box"
-                android:paddingLeft="10dp"
-                android:text="봄 라이트 톤은 채도가 낮은 색이 어울리는 웜톤이에요.\n\n
+                <ImageView
+                    android:id="@+id/image_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/light_spring" />
 
-대표 연예인은 아이유, 수지, 설리, 송혜교 등이 있어요\n\n
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="20" />
 
-봄 라이트 톤은 채도가 낮은 색 위주로 화장을 해야해요.\n\n
+                <TextView
+                    android:id="@+id/text_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/gray_line_box"
+                    android:paddingLeft="10dp"
+                    android:textSize="18sp" />
 
-음영화장이나 진한 눈 화장은 어울리지 않고\n\n
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="18" />
+            </LinearLayout>
 
-눈 화장은 최대한 줄이고 속눈썹을 신경써서 올리고 립 화장에 집중해야 훨씬 자연스러워요\n\n
-
-립스틱 색은 채도가 높지않고 명도가 높은 색상이 어울려요.\n\n
-
-블러셔는 최대한 생략하는 것이 좋으나 흰색이 섞인 핑크가 어울리는 편이에요!\n\n
-"
-                android:textSize="18sp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="18" />
-        </LinearLayout>
-
-    </ScrollView>
+        </ScrollView>
     </LinearLayout>
 
     <Button
-        android:id="@+id/goWebViewBtn"
+        android:id="@+id/btn_webview"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_gravity="bottom"

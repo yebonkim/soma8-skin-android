@@ -18,8 +18,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class GuideActivity extends AppCompatActivity  {
-    private static final String TAG = "GuideActivity";
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -31,7 +29,7 @@ public class GuideActivity extends AppCompatActivity  {
         ActionBarManager.initBackArrowActionbar(this, toolbar, getString(R.string.guideTitle));
     }
 
-    @OnClick(R.id.skipBtn)
+    @OnClick(R.id.btn_skip)
     public void skip() {
         SimpleDialogBuilder.makeCustomTwoButtonDialogAndShow(this, getString(R.string.skipAlert),
                 getLayoutInflater(), new View.OnClickListener() {
@@ -42,7 +40,7 @@ public class GuideActivity extends AppCompatActivity  {
         });
     }
 
-    @OnClick(R.id.startBtn)
+    @OnClick(R.id.btn_start)
     public void goToCameraActivity() {
         startActivity(new Intent(this, CameraActivity.class));
         finish();
@@ -52,7 +50,6 @@ public class GuideActivity extends AppCompatActivity  {
         startActivity(new Intent(this, WebViewActivity.class));
         finish();
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

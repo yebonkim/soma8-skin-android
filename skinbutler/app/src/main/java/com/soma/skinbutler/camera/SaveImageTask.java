@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import com.soma.skinbutler.common.IntentExtra;
 import com.soma.skinbutler.common.util.ImageUtil;
 import com.soma.skinbutler.serverinterface.ServerQuery;
 import com.soma.skinbutler.serverinterface.request.SkinRequest;
@@ -101,7 +102,7 @@ public class SaveImageTask extends AsyncTask<byte[], Void, Void> {
             public void onResponse(Response response, Retrofit retrofit) {
                 StdSkinResponse stdSkinResponse = (StdSkinResponse)response.body();
 
-                activity.startActivity(new Intent(activity, ResultActivity.class).putExtra("skin_id", stdSkinResponse.getStdSkin().getStdSkinColorId()));
+                activity.startActivity(new Intent(activity, ResultActivity.class).putExtra(IntentExtra.SKIN_ID, stdSkinResponse.getStdSkin().getStdSkinColorId()));
                 activity.finish();
             }
 
@@ -114,7 +115,7 @@ public class SaveImageTask extends AsyncTask<byte[], Void, Void> {
 
 
     public void goToResultActivity(int skin_id) {
-        activity.startActivity(new Intent(activity, ResultActivity.class).putExtra("skin_id", skin_id));
+        activity.startActivity(new Intent(activity, ResultActivity.class).putExtra("mSkinId", skin_id));
         activity.finish();
     }
 

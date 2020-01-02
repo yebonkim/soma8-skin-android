@@ -12,9 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class WebViewActivity extends AppCompatActivity  {
-    private static final String TAG = "WebViewActivity";
-
-    @BindView(R.id.webView)
+    @BindView(R.id.webview)
     WebView webView;
 
     @Override

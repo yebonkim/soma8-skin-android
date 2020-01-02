@@ -8,13 +8,13 @@ import android.webkit.WebViewClient;
 
 import com.soma.skinbutler.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class WebViewActivity extends AppCompatActivity  {
     private static final String TAG = "WebViewActivity";
 
-    @Bind(R.id.webView)
+    @BindView(R.id.webView)
     WebView webView;
 
     @Override

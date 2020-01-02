@@ -12,15 +12,15 @@ import com.soma.skinbutler.signup.SignUpActivity;
 import com.soma.skinbutler.webview.WebViewActivity;
 import com.soma.skinbutler.common.util.SimpleDialogBuilder;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View{
     private static final String TAG = "LoginActivity";
-    @Bind(R.id.idET)
+    @BindView(R.id.idET)
     EditText idET;
-    @Bind(R.id.pwET)
+    @BindView(R.id.pwET)
     EditText pwET;
 
     LoginPresenter presenter;

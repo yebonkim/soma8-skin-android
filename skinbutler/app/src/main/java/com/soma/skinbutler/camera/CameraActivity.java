@@ -36,18 +36,18 @@ import com.soma.skinbutler.common.util.SimpleDialogBuilder;
 import com.soma.skinbutler.view.CameraPreView;
 import com.soma.skinbutler.webview.WebViewActivity;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback, CameraContract.View {
     CameraPreView preview;
 
-    @Bind(R.id.cameraView)
+    @BindView(R.id.cameraView)
     SurfaceView cameraView;
-    @Bind(R.id.guideView)
+    @BindView(R.id.guideView)
     SurfaceView guideView;
-    @Bind(R.id.frameLayout)
+    @BindView(R.id.frameLayout)
     FrameLayout frameLayout;
 
     SurfaceHolder cameraHolder, guideHolder;

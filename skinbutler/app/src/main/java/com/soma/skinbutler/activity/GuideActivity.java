@@ -13,14 +13,14 @@ import com.soma.skinbutler.common.util.ActionBarManager;
 import com.soma.skinbutler.common.util.SimpleDialogBuilder;
 import com.soma.skinbutler.webview.WebViewActivity;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class GuideActivity extends AppCompatActivity  {
     private static final String TAG = "GuideActivity";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     @Override

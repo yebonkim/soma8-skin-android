@@ -12,20 +12,20 @@ import com.soma.skinbutler.R;
 import com.soma.skinbutler.common.util.ActionBarManager;
 import com.soma.skinbutler.webview.WebViewActivity;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ResultActivity extends AppCompatActivity  {
     private static final String TAG = "LoginActivity";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.skinNameTV)
+    @BindView(R.id.skinNameTV)
     TextView skinNameTV;
-    @Bind(R.id.colorIV)
+    @BindView(R.id.colorIV)
     ImageView colorIV;
-    @Bind(R.id.infoTV)
+    @BindView(R.id.infoTV)
     TextView infoTV;
 
     int skin_id;

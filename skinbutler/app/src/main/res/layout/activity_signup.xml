@@ -207,7 +207,7 @@
         android:layout_weight="5"/>
 
     <RadioGroup
-        android:id="@+id/sexRG"
+        android:id="@+id/genderRG"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="36"

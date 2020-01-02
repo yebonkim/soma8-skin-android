@@ -29,43 +29,43 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SignUpActivity extends AppCompatActivity  implements SignUpContract.View{
     private static final String TAG = "SignUpActivity";
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.profileIV)
+    @BindView(R.id.profileIV)
     ImageView profileIV;
-    @Bind(R.id.nameET)
+    @BindView(R.id.nameET)
     EditText nameET;
-    @Bind(R.id.pwET)
+    @BindView(R.id.pwET)
     EditText pwET;
-    @Bind(R.id.pwConfirmET)
+    @BindView(R.id.pwConfirmET)
     EditText pwConfirmET;
-    @Bind(R.id.monthSpinner)
+    @BindView(R.id.monthSpinner)
     Spinner monthSpinner;
-    @Bind(R.id.daySpinner)
+    @BindView(R.id.daySpinner)
     Spinner daySpinner;
-    @Bind(R.id.yearSpinner)
+    @BindView(R.id.yearSpinner)
     Spinner yearSpinner;
-    @Bind(R.id.sexRG)
-    RadioGroup sexRG;
-    @Bind(R.id.maleBtn)
+    @BindView(R.id.genderRG)
+    RadioGroup genderRG;
+    @BindView(R.id.maleBtn)
     RadioButton maleBtn;
-    @Bind(R.id.femaleBtn)
+    @BindView(R.id.femaleBtn)
     RadioButton femaleBtn;
-    @Bind(R.id.drynessBtn)
+    @BindView(R.id.drynessBtn)
     RadioButton drynessBtn;
-    @Bind(R.id.neutralBtn)
+    @BindView(R.id.neutralBtn)
     RadioButton neutralBtn;
-    @Bind(R.id.oillyBtn)
+    @BindView(R.id.oillyBtn)
     RadioButton oillyBtn;
-    @Bind(R.id.compoundBtn)
+    @BindView(R.id.compoundBtn)
     RadioButton compoundBtn;
-    @Bind(R.id.sensivitityBtn)
+    @BindView(R.id.sensivitityBtn)
     RadioButton sensivitityBtn;
 
     final int photoCode = 9999;
@@ -81,7 +81,7 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
         ActionBarManager.initBackArrowActionbar(this, toolbar, getString(R.string.signUp));
         presenter = new SignUpPresenter();
         presenter.setView(this, this);
-        sexRG.setOnCheckedChangeListener(sexChangedListener);
+        genderRG.setOnCheckedChangeListener(sexChangedListener);
         drynessBtn.setOnCheckedChangeListener(skinTypeChangedListener);
         neutralBtn.setOnCheckedChangeListener(skinTypeChangedListener);
         oillyBtn.setOnCheckedChangeListener(skinTypeChangedListener);

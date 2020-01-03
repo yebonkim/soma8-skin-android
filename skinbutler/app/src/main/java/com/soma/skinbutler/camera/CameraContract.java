@@ -1,6 +1,7 @@
 package com.soma.skinbutler.camera;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
@@ -19,20 +20,20 @@ public interface CameraContract {
         void startCamera();
         void showLoadingDialog();
         void dismissLoadingDialog();
+        int getCameraRotation();
     }
 
     interface Presenter {
-        void setView(Activity activity, View view);
+        void setView(View view);
         void focusing();
         void swapCamera();
         Camera getCamera();
         void releaseCamera();
         void resetCamera(SurfaceHolder cameraHolder);
-        void initPath();
         int getPictureWidth();
         int getPictureHeight();
         void capture();
         Camera.Size getOptimalPreviewSize(int width, int height, Camera.Parameters params);
-        void setCanvasGuideLine(Canvas canvas);
+        void setCanvasGuideLine(Context context, Canvas canvas);
     }
 }

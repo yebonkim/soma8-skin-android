@@ -32,15 +32,12 @@ public class CameraPreView extends ViewGroup implements SurfaceHolder.Callback {
         mHolder = mSurfaceView.getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
     }
 
     public void setCamera(Camera camera) {
         if (mCamera != null) {
             mCamera.stopPreview();
-
             mCamera.release();
-
             mCamera = null;
         }
 
@@ -66,7 +63,6 @@ public class CameraPreView extends ViewGroup implements SurfaceHolder.Callback {
 
             mCamera.startPreview();
         }
-
     }
 
     @Override
@@ -101,7 +97,6 @@ public class CameraPreView extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
-
         try {
             if (mCamera != null) {
                 mCamera.setPreviewDisplay(holder);
@@ -117,7 +112,6 @@ public class CameraPreView extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
-
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         if ( mCamera != null) {
             Camera.Parameters parameters = mCamera.getParameters();
@@ -131,9 +125,7 @@ public class CameraPreView extends ViewGroup implements SurfaceHolder.Callback {
 
             mCamera.startPreview();
         }
-
     }
-
 }
 
 

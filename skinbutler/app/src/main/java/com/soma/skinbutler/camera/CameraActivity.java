@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -17,8 +18,11 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import com.soma.skinbutler.R;
+import com.soma.skinbutler.common.IntentExtra;
 import com.soma.skinbutler.common.util.SimpleDialogBuilder;
 import com.soma.skinbutler.view.CameraPreView;
+
+import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,15 +49,29 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         setContentView(R.layout.activity_camera);
         ButterKnife.bind(this);
 
-        mPresenter = new CameraPresenter();
-        mPresenter.setView(this, this);
-        mPresenter.initPath();
+        mPresenter = new CameraPresenter(getBaseContext(), onImageSentListener);
+        mPresenter.setView(this);
 
         setCameraHolder();
         setGuideHolder();
         startCamera();
         setLoadingDialog();
     }
+
+    private OnImageSentListener onImageSentListener = new OnImageSentListener() {
+        @Override
+        public void goToResultActivity(int skinId) {
+            startActivity(new Intent(CameraActivity.this, ResultActivity.class)
+                    .putExtra(IntentExtra.SKIN_ID, skinId));
+            finish();
+        }
+
+        @Override
+        public void refreshGallery(File file) {
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                    .setData(Uri.fromFile(file)));
+        }
+    };
 
     protected void setCameraHolder() {
         mCameraHolder = cameraView.getHolder();
@@ -124,6 +142,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         cameraParams.setPreviewSize(optimalSize.width, optimalSize.height);
     }
 
+    @Override
+    public int getCameraRotation() {
+        return getWindowManager().getDefaultDisplay().getRotation();
+    }
+
     protected void setPreview() {
         if (preview == null) {
             preview = new CameraPreView(this, cameraView);
@@ -166,7 +189,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
     protected void draw() {
         Canvas canvas = mGuideHolder.lockCanvas(null);
-        mPresenter.setCanvasGuideLine(canvas);
+        mPresenter.setCanvasGuideLine(getBaseContext(), canvas);
         mGuideHolder.unlockCanvasAndPost(canvas);
     }
 
@@ -174,6 +197,12 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     public void onBackPressed() {
         super.onBackPressed();
         //show Dialog
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPresenter.releaseCamera();
     }
 
     @Override

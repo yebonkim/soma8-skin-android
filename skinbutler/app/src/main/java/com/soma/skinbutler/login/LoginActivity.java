@@ -2,13 +2,17 @@ package com.soma.skinbutler.login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.soma.skinbutler.R;
 import com.soma.skinbutler.common.IntentExtra;
+import com.soma.skinbutler.common.PermissionList;
 import com.soma.skinbutler.signup.SignUpActivity;
 import com.soma.skinbutler.webview.WebViewActivity;
 import com.soma.skinbutler.common.util.SimpleDialogBuilder;
@@ -17,7 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LoginActivity extends AppCompatActivity implements LoginContract.View{
+public class LoginActivity extends AppCompatActivity implements LoginContract.View {
     @BindView(R.id.edit_id)
     EditText idEdit;
     @BindView(R.id.edit_pw)
@@ -33,9 +37,25 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         ButterKnife.bind(this);
 
         mPresenter = new LoginPresenter();
-        mPresenter.setView(this, this);
-        mPresenter.getPermission();
+        mPresenter.setView(this);
+        getPermission();
         setLoadingDialog();
+    }
+
+    protected void getPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int result;
+
+            String[] permissionList = PermissionList.list;
+
+            for (int i = 0; i < permissionList.length; i++) {
+                result = ContextCompat.checkSelfPermission(getApplicationContext(), permissionList[i]);
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, permissionList, 1);
+                    break;
+                }
+            }
+        }
     }
 
     @OnClick(R.id.btn_login)
@@ -46,15 +66,15 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mPresenter.onLoginClick(userId, password);
     }
 
-    @Override
     @OnClick(R.id.btn_sign_up)
     public void goToSignUpActivity() {
         startActivity(new Intent(this, SignUpActivity.class));
     }
 
     @Override
-    public void showErrorDialog(String errorMsg) {
-        SimpleDialogBuilder.makeCustomOneButtonDialogAndShow(this, errorMsg, getLayoutInflater());
+    public void showErrorDialog(int errorMsgId) {
+        SimpleDialogBuilder.makeCustomOneButtonDialogAndShow(this, getString(errorMsgId),
+                getLayoutInflater());
     }
 
     @Override
@@ -65,11 +85,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void stopLoadingDialog() {
         mProgressDialog.dismiss();
-    }
-
-    @Override
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override

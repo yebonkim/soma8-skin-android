@@ -21,17 +21,22 @@ import com.soma.skinbutler.common.util.ActionBarManager;
 import com.soma.skinbutler.common.util.ImageUtil;
 import com.soma.skinbutler.common.util.SimpleDialogBuilder;
 import com.soma.skinbutler.login.LoginActivity;
+import com.soma.skinbutler.model.User;
 import com.soma.skinbutler.serverinterface.request.SignUpRequest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SignUpActivity extends AppCompatActivity  implements SignUpContract.View {
     private final static int PHOTO_CODE = 1001;
+    private final static int[] SKIN_TYPES = {User.SkinType.DRYNESS, User.SkinType.NEUTRAL,
+            User.SkinType.OILLY, User.SkinType.COMPOUND, User.SkinType.SENSITIVITY};
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -55,16 +60,8 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
     RadioButton maleBtn;
     @BindView(R.id.btn_female)
     RadioButton femaleBtn;
-    @BindView(R.id.btn_dryness)
-    RadioButton drynessBtn;
-    @BindView(R.id.btn_neutral)
-    RadioButton neutralBtn;
-    @BindView(R.id.btn_oilly)
-    RadioButton oillyBtn;
-    @BindView(R.id.btn_compound)
-    RadioButton compoundBtn;
-    @BindView(R.id.btn_sensitivity)
-    RadioButton sensitivityBtn;
+    @BindViews({R.id.btn_dryness, R.id.btn_neutral, R.id.btn_oilly, R.id.btn_compound, R.id.btn_sensitivity})
+    List<RadioButton> skinTypeBtns;
 
     SignUpPresenter mPresenter;
 
@@ -77,49 +74,14 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
         ActionBarManager.initBackArrowActionbar(this, toolbar, getString(R.string.signUp));
 
         mPresenter = new SignUpPresenter();
-        mPresenter.setView(this, this);
+        mPresenter.setView(this);
 
         genderRadioGroup.setOnCheckedChangeListener(mGenderChangedListener);
-        drynessBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
-        neutralBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
-        oillyBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
-        compoundBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
-        sensitivityBtn.setOnCheckedChangeListener(mSkinTypeChangedListener);
-        profileImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.profile_default));
+        for (RadioButton btn : skinTypeBtns) {
+            btn.setOnCheckedChangeListener(mSkinTypeChangedListener);
+        }
+        profileImage.setBackground(getResources().getDrawable(R.drawable.profile_default));
     }
-
-    RadioGroup.OnCheckedChangeListener mGenderChangedListener = new RadioGroup.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(RadioGroup radioGroup, @IdRes int id) {
-            setWhiteButton(maleBtn);
-            setWhiteButton(femaleBtn);
-
-            switch (id) {
-                case R.id.btn_male:
-                    setBlackButton(maleBtn);
-                    break;
-                case R.id.btn_female:
-                    setBlackButton(femaleBtn);
-                    break;
-            }
-        }
-    };
-
-    CompoundButton.OnCheckedChangeListener mSkinTypeChangedListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-            if (isChecked) {
-                setWhiteButton(drynessBtn);
-                setWhiteButton(neutralBtn);
-                setWhiteButton(oillyBtn);
-                setWhiteButton(compoundBtn);
-                setWhiteButton(sensitivityBtn);
-
-                compoundButton.setBackgroundResource(R.drawable.black_oval_btn_background);
-                compoundButton.setTextColor(ContextCompat.getColor(SignUpActivity.this, R.color.white));
-            }
-        }
-    };
 
     protected void setBlackButton(RadioButton btn) {
         btn.setBackgroundResource(R.drawable.black_oval_btn_background);
@@ -135,13 +97,15 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
 
     @Override
     public void setDaySpinner(ArrayList<String> data) {
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, data);
+        ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item, data);
         daySpinner.setAdapter(adapter);
     }
 
     @Override
     public void setYearSpinner(ArrayList<String> data) {
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, data);
+        ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item, data);
         yearSpinner.setAdapter(adapter);
     }
 
@@ -159,57 +123,43 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
     }
 
     protected String getBirthday() {
-        String year = yearSpinner.getSelectedItem().toString();
-        String month = monthSpinner.getSelectedItem().toString();
+        StringBuilder strBuilder = new StringBuilder();
 
-        if (month.equals("January"))
-            month = "01";
-        else if (month.equals("February"))
-            month = "02";
-        else if (month.equals("March"))
-            month = "03";
-        else if (month.equals("April"))
-            month = "04";
-        else if (month.equals("May"))
-            month = "05";
-        else if (month.equals("June"))
-            month = "06";
-        else if (month.equals("July"))
-            month = "07";
-        else if (month.equals("August"))
-            month = "08";
-        else if (month.equals("September"))
-            month = "09";
-        else if (month.equals("October"))
-            month = "10";
-        else if (month.equals("November"))
-            month = "11";
-        else if (month.equals("December"))
-            month = "12";
+        strBuilder.append(yearSpinner.getSelectedItem().toString());
+        strBuilder.append("-");
 
-        String day = daySpinner.getSelectedItem().toString();
-        return year+"-"+month+"-"+day;
+        int month = monthSpinner.getSelectedItemPosition() + 1;
+
+        if (month % 10 < 1) {
+            strBuilder.append("0");
+            strBuilder.append(month);
+        } else {
+            strBuilder.append(month);
+        }
+
+        strBuilder.append("-");
+        strBuilder.append(daySpinner.getSelectedItem().toString());
+
+        return strBuilder.toString();
     }
 
+    @User.Gender
     protected int getGender() {
         if (maleBtn.isChecked()) {
-            return 0;
+            return User.Gender.MALE;
         } else {
-            return 1;
+            return User.Gender.FEMALE;
         }
     }
 
+    @User.SkinType
     protected int getSkinTypeId() {
-        if (drynessBtn.isChecked())
-            return 1;
-        else if (neutralBtn.isChecked())
-            return 2;
-        else if (oillyBtn.isChecked())
-            return 3;
-        else if (compoundBtn.isChecked())
-            return 4;
-        else
-            return 5;
+        for (int i = 0; i < skinTypeBtns.size(); i++) {
+            if (skinTypeBtns.get(i).isChecked()) {
+                return SKIN_TYPES[i];
+            }
+        }
+        return SKIN_TYPES[0];
     }
 
     @Override
@@ -219,8 +169,9 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
     }
 
     @Override
-    public void showErrorDialog(String errorMsg) {
-        SimpleDialogBuilder.makeCustomOneButtonDialogAndShow(this, errorMsg, getLayoutInflater());
+    public void showErrorDialog(int errorMsgId) {
+        SimpleDialogBuilder.makeCustomOneButtonDialogAndShow(this, getString(errorMsgId),
+                getLayoutInflater());
     }
 
     @OnClick(R.id.image_profile)
@@ -233,12 +184,44 @@ public class SignUpActivity extends AppCompatActivity  implements SignUpContract
 
     @OnClick(R.id.btn_sign_up)
     public void signUpBtn() {
-        boolean isValid = mPresenter.validate(nameEdit.getText().toString(), pwEdit.getText().toString(), pwConfirmEdit.getText().toString());
+        boolean isValid = mPresenter.validate(nameEdit.getText().toString(),
+                pwEdit.getText().toString(), pwConfirmEdit.getText().toString());
 
         if (isValid) {
             mPresenter.signUp();
         }
     }
+
+    private RadioGroup.OnCheckedChangeListener mGenderChangedListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup radioGroup, @IdRes int id) {
+            switch (id) {
+                case R.id.btn_male:
+                    setBlackButton(maleBtn);
+                    setWhiteButton(femaleBtn);
+                    break;
+                case R.id.btn_female:
+                    setBlackButton(femaleBtn);
+                    setWhiteButton(maleBtn);
+                    break;
+            }
+        }
+    };
+
+    private CompoundButton.OnCheckedChangeListener mSkinTypeChangedListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+            if (isChecked) {
+                for (RadioButton btn : skinTypeBtns) {
+                    setWhiteButton(btn);
+                }
+
+                compoundButton.setBackgroundResource(R.drawable.black_oval_btn_background);
+                compoundButton.setTextColor(ContextCompat.getColor(SignUpActivity.this,
+                        R.color.white));
+            }
+        }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

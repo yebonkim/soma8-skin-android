@@ -16,11 +16,11 @@ public interface SignUpContract {
         void setYearSpinner(ArrayList<String> data);
         SignUpRequest collectData(String image);
         void goToLoginActivity();
-        void showErrorDialog(String errorMsg);
+        void showErrorDialog(int errorMsgId);
     }
 
     interface Presenter {
-        void setView(SignUpContract.View view, Activity activity);
+        void setView(SignUpContract.View view);
         void signUp();
         boolean validate(String name, String pw, String pwConfirm);
         void setProfile(String image);

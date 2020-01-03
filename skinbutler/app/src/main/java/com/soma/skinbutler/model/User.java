@@ -1,7 +1,12 @@
 package com.soma.skinbutler.model;
 
+
+import android.support.annotation.IntDef;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 
 /**
@@ -9,6 +14,23 @@ import java.util.Date;
  */
 
 public class User {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SkinType.DRYNESS, SkinType.NEUTRAL, SkinType.OILLY, SkinType.COMPOUND, SkinType.SENSITIVITY})
+    public @interface SkinType {
+        int DRYNESS = 1;
+        int NEUTRAL = 2;
+        int OILLY = 3;
+        int COMPOUND = 4;
+        int SENSITIVITY = 5;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({Gender.MALE, Gender.FEMALE})
+    public @interface Gender {
+        int MALE = 0;
+        int FEMALE = 1;
+    }
+
     @SerializedName("user_id")
     int userId;
     String email;

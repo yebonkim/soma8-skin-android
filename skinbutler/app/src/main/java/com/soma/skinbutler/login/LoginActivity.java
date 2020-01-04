@@ -22,6 +22,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
+    private final static int PERMISSION_REQUEST_CODE = 2001;
+
     @BindView(R.id.edit_id)
     EditText idEdit;
     @BindView(R.id.edit_pw)
@@ -51,7 +53,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
             for (int i = 0; i < permissionList.length; i++) {
                 result = ContextCompat.checkSelfPermission(getApplicationContext(), permissionList[i]);
                 if (result != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, permissionList, 1);
+                    ActivityCompat.requestPermissions(this, permissionList,
+                            PERMISSION_REQUEST_CODE);
                     break;
                 }
             }
